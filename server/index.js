@@ -3,6 +3,8 @@ const fs = require("fs").promises;
 const path = require("path");
 
 const app = express();
+const PORT = process.env.PORT || 3030;
+
 const dataFile = path.join(__dirname, "data.json");
 const reginettaFile = path.join(__dirname, "reginetta.json");
 
@@ -32,7 +34,7 @@ app.post("/reginetta", async (req, res) => {
     postManager(req, res, reginettaFile);
 });
 
-app.listen(3000, () => console.log("Server is running..."));
+app.listen(PORT, () => console.log("Server is running..."));
 
 
 
