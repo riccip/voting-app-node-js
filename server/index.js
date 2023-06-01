@@ -71,7 +71,7 @@ async function getManager(req, res, file, percentuale){
         }else{
             return {
                 label,
-                percentage: 0
+                percentage: totalVotes
             }
         }
 
