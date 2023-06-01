@@ -19,11 +19,11 @@ app.use((req, res, next) => {
 });
 
 app.get("/poll", async (req, res) => {
-    getManager(req, res, dataFile);
+    getManager(req, res, dataFile,false);
 });
 
 app.get("/reginetta", async (req, res) => {
-    getManager(req, res, reginettaFile);
+    getManager(req, res, reginettaFile,false);
 });
 
 app.post("/poll", async (req, res) => {
@@ -32,6 +32,14 @@ app.post("/poll", async (req, res) => {
 
 app.post("/reginetta", async (req, res) => {
     postManager(req, res, reginettaFile);
+});
+
+app.get("/pollRisultato", async (req, res) => {
+    getManager(req, res, dataFile,true);
+});
+
+app.get("/reginettaRisultato", async (req, res) => {
+    getManager(req, res, reginettaFile,true);
 });
 
 app.listen(PORT, () => console.log("Server is running..."));
@@ -50,15 +58,23 @@ async function postManager(req, res, file){
     res.end();
 }
 
-async function getManager(req, res, file){
+async function getManager(req, res, file, percentuale){
     let data = JSON.parse(await fs.readFile(file, "utf-8"));
     const totalVotes = Object.values(data).reduce((total, n) => total += n, 0);
 
     data = Object.entries(data).map(([label, votes]) => {
-        return {
-            label,
-            percentage: (((100 * votes) / totalVotes) || 0).toFixed(0)
+        if (percentuale){
+            return {
+                label,
+                percentage: (((100 * votes) / totalVotes) || 0).toFixed(0)
+            }
+        }else{
+            return {
+                label,
+                percentage: 0
+            }
         }
+
     });
 
     res.json(data);
