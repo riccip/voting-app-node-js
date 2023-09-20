@@ -61,15 +61,7 @@ class Poll {
 
 const p = new Poll(
     document.querySelector(".reDelBallo"),
-    "Vota il re del ballo!",
+    "Menu Sagra",
     "poll",
     "reDelBalloCookie"
-);
-
-
-const reginetta = new Poll(
-    document.querySelector(".reginettaDelBallo"),
-    "Vota la reginetta del ballo!",
-    "reginetta",
-    "reginettaDelBalloCookie"
 );
