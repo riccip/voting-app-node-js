@@ -29,31 +29,10 @@ class Poll {
                     <div class="poll__option-fill"></div>
                     <div class="poll__option-info">
                         <span class="poll__label">${ option.label }</span>
-                        <span class="poll__percentage">${ option.percentage }%</span>
+                        <span class="poll__percentage">${ option.percentage }</span>
                     </div>
                 </div>
             `;
-
-            if (!this.selected) {
-                fragment.querySelector(".poll__option").addEventListener("click", () => {
-                    fetch(this.endpoint, {
-                        method: "post",
-                        body: `add=${ option.label }`,
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        }
-                    }).then(() => {
-                        this.selected = option.label;
-
-                        sessionStorage.setItem(this.cookieName, option.label);
-
-                        this._refresh();
-                    })
-                });
-            }
-
-            fragment.querySelector(".poll__option-fill").style.width = `${ option.percentage }%`;
-
             this.root.appendChild(fragment);
         }
     }
