@@ -44,10 +44,6 @@ app.get("/reginettaRisultato", async (req, res) => {
 
 app.listen(PORT, () => console.log("Server is running..."));
 
-
-
-
-
 async function postManager(req, res, file){
     const data = JSON.parse(await fs.readFile(file, "utf-8"));
 
@@ -78,4 +74,22 @@ async function getManager(req, res, file, percentuale){
     });
 
     res.json(data);
+
 }
+
+const { Client } = require('pg');
+async function sayHello() { 
+    const client = new Client(
+        { 
+            user: 'foo', 
+            password: 'bar', 
+            database: 'example' 
+        }); 
+    await client.connect();
+    const res = await client.query('SELECT * FROM STUDENTI') 
+    console.log(res.rows[0].nome); 
+// 👋 Hello world. 
+    console.log(res.rows[1].cognome); 
+// 👋 Hola, mundo. 
+    await client.end();
+} 
