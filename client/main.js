@@ -3,7 +3,7 @@ class Poll {
         this.root = root;
         this.cookieName = cookieName;
         this.selected = sessionStorage.getItem(cookieName);
-        this.endpoint = "http://localhost:3030/" + postUrl;
+        this.endpoint = "https://votingws.onrender.com/" + postUrl;
 
         this.root.insertAdjacentHTML("afterbegin", `
             <div class="poll__title">${ title }</div>

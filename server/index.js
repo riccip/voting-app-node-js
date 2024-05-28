@@ -68,10 +68,15 @@ async function postManager(req, res, file){
 
 async function getManager(req, res, genderFilter, percentuale){
  
-    var queryRes = await pool.query(`SELECT s.nome, s.cognome, s.gender, s.classe, s.id_studente, Count(v.orario) as votes FROM STUDENTI as s LEFT OUTER JOIN voti as v on s.id_studente = v.id_studente where s.gender='${genderFilter}' group by s.nome, s.cognome, s.classe, s.gender, S.id_studente order by s.classe`); 
+    var queryRes;
+    if (percentuale){
+        queryRes = await pool.query(`SELECT s.nome, s.cognome, s.gender, s.classe, s.id_studente, Count(v.orario) as votes FROM STUDENTI as s LEFT OUTER JOIN voti as v on s.id_studente = v.id_studente where s.gender='${genderFilter}' group by s.nome, s.cognome, s.classe, s.gender, S.id_studente order by votes DESC`); 
+    }else{
+        queryRes = await pool.query(`SELECT s.nome, s.cognome, s.gender, s.classe, s.id_studente, Count(v.orario) as votes FROM STUDENTI as s LEFT OUTER JOIN voti as v on s.id_studente = v.id_studente where s.gender='${genderFilter}' group by s.nome, s.cognome, s.classe, s.gender, S.id_studente order by s.classe,s.nome`); 
+    }
     console.log(queryRes.rows); 
 
-    var queryRes2 = await pool.query('SELECT Count(*) as totalVotes FROM voti as v '); 
+    var queryRes2 = await pool.query(`SELECT Count(*) as totalVotes FROM voti as v WHERE gender='${genderFilter}'`); 
 
     let data = queryRes.rows;
     let totalVotes=queryRes2.rows[0].totalvotes;

@@ -16,15 +16,17 @@ class Poll {
         const response = await fetch(this.endpoint);
         const data = await response.json();
 
-        this.root.querySelectorAll(".poll__option").forEach(option => {
+        this.root.querySelectorAll(".accordion-item").forEach(option => {
             option.remove();
         });
-
+        let classe = "9Z";
+        var accordionBody=this.root;
         for (const option of data) {
-            const template = document.createElement("template");
-            const fragment = template.content;
+            console.log(accordionBody);
+            const templateOption = document.createElement("template");
+            const fragmentOption = templateOption.content;
 
-            template.innerHTML = `
+           templateOption.innerHTML = `
                 <div class="poll__option ${ this.selected == option.label ? "poll__option--selected": "" }">
                     <div class="poll__option-fill"></div>
                     <div class="poll__option-info">
@@ -34,27 +36,9 @@ class Poll {
                 </div>
             `;
 
-            if (!this.selected) {
-                fragment.querySelector(".poll__option").addEventListener("click", () => {
-                    fetch(this.endpoint, {
-                        method: "post",
-                        body: `add=${ option.label }`,
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded"
-                        }
-                    }).then(() => {
-                        this.selected = option.label;
+            fragmentOption.querySelector(".poll__option-fill").style.width = `${ option.percentage }%`;
 
-                        sessionStorage.setItem(this.cookieName, option.label);
-
-                        this._refresh();
-                    })
-                });
-            }
-
-            fragment.querySelector(".poll__option-fill").style.width = `${ option.percentage }%`;
-
-            this.root.appendChild(fragment);
+            this.root.appendChild(fragmentOption);
         }
     }
 }
