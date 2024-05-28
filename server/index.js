@@ -74,16 +74,16 @@ async function getManager(req, res, file, percentuale){
     });
 
     res.json(data);
-
+    
 }
 
 const { Client } = require('pg');
 async function sayHello() { 
     const client = new Client(
         { 
-            user: 'foo', 
-            password: 'bar', 
-            database: 'example' 
+            user: 'adminipc', 
+            password: 'xrcFXoyNSzYMxFu19eewvhwDZvPCfzr0', 
+            database: 'dpg-cparbtkf7o1s73alhec0-a.frankfurt-postgres.render.com/voting2024' 
         }); 
     await client.connect();
     const res = await client.query('SELECT * FROM STUDENTI') 
@@ -93,3 +93,4 @@ async function sayHello() {
 // 👋 Hola, mundo. 
     await client.end();
 } 
+sayHello();
