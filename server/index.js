@@ -1,3 +1,16 @@
+const { Pool } = require('pg');
+ 
+const pool = new Pool({
+  connectionString: 'postgres://adminipc:xrcFXoyNSzYMxFu19eewvhwDZvPCfzr0@dpg-cparbtkf7o1s73alhec0-a.frankfurt-postgres.render.com/voting2024?ssl=true',
+  max: 20,
+  idleTimeoutMillis: 10000,
+  connectionTimeoutMillis: 10000,
+})
+//const { Client } = require('pg');
+//const client = new Client(
+//    { 
+//        connectionString: 'postgres://adminipc:xrcFXoyNSzYMxFu19eewvhwDZvPCfzr0@dpg-cparbtkf7o1s73alhec0-a.frankfurt-postgres.render.com/voting2024?ssl=true'
+//    });
 const express = require("express");
 const fs = require("fs").promises;
 const path = require("path");
@@ -7,6 +20,8 @@ const PORT = process.env.PORT || 3030;
 
 const dataFile = path.join(__dirname, "data.json");
 const reginettaFile = path.join(__dirname, "reginetta.json");
+
+
 
 // Support POSTing form data with URL encoded
 app.use(express.urlencoded({ extended: true }));
@@ -19,55 +34,68 @@ app.use((req, res, next) => {
 });
 
 app.get("/poll", async (req, res) => {
-    getManager(req, res, dataFile,false);
+    getManager(req, res, 'M',false);
 });
 
 app.get("/reginetta", async (req, res) => {
-    getManager(req, res, reginettaFile,false);
+    getManager(req, res, 'F',false);
 });
 
 app.post("/poll", async (req, res) => {
-    postManager(req, res, dataFile);
+    postManager(req, res, 'M');
 });
 
 app.post("/reginetta", async (req, res) => {
-    postManager(req, res, reginettaFile);
+    postManager(req, res, 'F');
 });
 
 app.get("/pollRisultato", async (req, res) => {
-    getManager(req, res, dataFile,true);
+    getManager(req, res, 'M',true);
 });
 
 app.get("/reginettaRisultato", async (req, res) => {
-    getManager(req, res, reginettaFile,true);
+    getManager(req, res, 'F',true);
 });
 
 app.listen(PORT, () => console.log("Server is running..."));
 
 async function postManager(req, res, file){
-    const data = JSON.parse(await fs.readFile(file, "utf-8"));
-
-    data[req.body.add]++;
-
-    await fs.writeFile(file, JSON.stringify(data));
+    await pool.query(`INSERT into VOTI (id_studente, gender, orario) values (${req.body.id},'${req.body.gender}',${new Date().getTime()}) `); 
+    console.log('Row Inserted'); 
 
     res.end();
 }
 
-async function getManager(req, res, file, percentuale){
-    let data = JSON.parse(await fs.readFile(file, "utf-8"));
-    const totalVotes = Object.values(data).reduce((total, n) => total += n, 0);
+async function getManager(req, res, genderFilter, percentuale){
+ 
+    var queryRes = await pool.query(`SELECT s.nome, s.cognome, s.gender, s.classe, s.id_studente, Count(v.orario) as votes FROM STUDENTI as s LEFT OUTER JOIN voti as v on s.id_studente = v.id_studente where s.gender='${genderFilter}' group by s.nome, s.cognome, s.classe, s.gender, S.id_studente order by s.classe`); 
+    console.log(queryRes.rows); 
 
-    data = Object.entries(data).map(([label, votes]) => {
+    var queryRes2 = await pool.query('SELECT Count(*) as totalVotes FROM voti as v '); 
+
+    let data = queryRes.rows;
+    let totalVotes=queryRes2.rows[0].totalvotes;
+
+    console.log(queryRes2.rows[0]); 
+
+    data = data.map(obj => {
         if (percentuale){
             return {
-                label,
-                percentage: (((100 * votes) / totalVotes) || 0).toFixed(0)
+                classe: obj.classe,
+                gender: obj.gender,
+                nome: obj.nome + " " + obj.cognome,
+                label: obj.id_studente + " " + obj.nome + " " + obj.cognome,
+                id: obj.id_studente,
+                percentage: (((100 * obj.votes) / totalVotes) || 0).toFixed(0)
             }
         }else{
             return {
-                label,
-                percentage: totalVotes
+                classe: obj.classe,
+                gender: obj.gender,
+                nome: obj.nome + " " + obj.cognome,
+                label: obj.id_studente + " " + obj.nome + " " + obj.cognome,
+                id: obj.id_studente,
+                percentage: obj.votes
             }
         }
 
@@ -76,21 +104,3 @@ async function getManager(req, res, file, percentuale){
     res.json(data);
     
 }
-
-const { Client } = require('pg');
-async function sayHello() { 
-    const client = new Client(
-        { 
-            user: 'adminipc', 
-            password: 'xrcFXoyNSzYMxFu19eewvhwDZvPCfzr0', 
-            database: 'dpg-cparbtkf7o1s73alhec0-a.frankfurt-postgres.render.com/voting2024' 
-        }); 
-    await client.connect();
-    const res = await client.query('SELECT * FROM STUDENTI') 
-    console.log(res.rows[0].nome); 
-// 👋 Hello world. 
-    console.log(res.rows[1].cognome); 
-// 👋 Hola, mundo. 
-    await client.end();
-} 
-sayHello();

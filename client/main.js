@@ -3,7 +3,7 @@ class Poll {
         this.root = root;
         this.cookieName = cookieName;
         this.selected = sessionStorage.getItem(cookieName);
-        this.endpoint = "https://votingws.onrender.com/" + postUrl;
+        this.endpoint = "http://localhost:3030/" + postUrl;
 
         this.root.insertAdjacentHTML("afterbegin", `
             <div class="poll__title">${ title }</div>
@@ -16,29 +16,50 @@ class Poll {
         const response = await fetch(this.endpoint);
         const data = await response.json();
 
-        this.root.querySelectorAll(".poll__option").forEach(option => {
+        this.root.querySelectorAll(".accordion-item").forEach(option => {
             option.remove();
         });
-
+        let classe = "9Z";
+        var accordionBody=this.root;
         for (const option of data) {
-            const template = document.createElement("template");
-            const fragment = template.content;
+            if (option.classe != classe){
+                const template = document.createElement("template");
+                    template.innerHTML = `
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading${this.root.id}${option.classe}">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${this.root.id}${option.classe}" aria-expanded="false" aria-controls="collapse${this.root.id}${option.classe}">
+                            ${option.classe} 
+                            </button>
+                            </h2>
+                            <div id="collapse${this.root.id}${option.classe}" class="accordion-collapse collapse" aria-labelledby="heading${this.root.id}${option.classe}" data-bs-parent="#${this.root.id}" style="">
+                                <div class="accordion-body">
+                                </div>
+                            </div>
+                        </div>`;
+                const fragment = template.content;
+                this.root.appendChild(fragment);
+                classe=option.classe;
+                accordionBody= this.root.querySelectorAll(".accordion-body")[this.root.querySelectorAll(".accordion-body").length-1];
+            } 
+            console.log(accordionBody);
+            const templateOption = document.createElement("template");
+            const fragmentOption = templateOption.content;
 
-            template.innerHTML = `
+           templateOption.innerHTML = `
                 <div class="poll__option ${ this.selected == option.label ? "poll__option--selected": "" }">
                     <div class="poll__option-fill"></div>
                     <div class="poll__option-info">
                         <span class="poll__label">${ option.label }</span>
-                        <span class="poll__percentage">${ option.percentage }%</span>
+                        <span class="poll__percentage">${ option.percentage }</span>
                     </div>
                 </div>
             `;
 
             if (!this.selected) {
-                fragment.querySelector(".poll__option").addEventListener("click", () => {
+                fragmentOption.querySelector(".poll__option").addEventListener("click", () => {
                     fetch(this.endpoint, {
                         method: "post",
-                        body: `add=${ option.label }`,
+                        body: `id=${ option.id }&gender=${ option.gender }`,
                         headers: {
                             "Content-Type": "application/x-www-form-urlencoded"
                         }
@@ -52,15 +73,15 @@ class Poll {
                 });
             }
 
-            fragment.querySelector(".poll__option-fill").style.width = `${ option.percentage }%`;
+            fragmentOption.querySelector(".poll__option-fill").style.width = `${ option.percentage }%`;
 
-            this.root.appendChild(fragment);
+            accordionBody.appendChild(fragmentOption);
         }
     }
 }
 
 const p = new Poll(
-    document.querySelector(".reDelBallo"),
+    document.querySelector("#accordion-reDelBallo"),
     "Vota il re del ballo!",
     "poll",
     "reDelBalloCookie"
@@ -68,7 +89,7 @@ const p = new Poll(
 
 
 const reginetta = new Poll(
-    document.querySelector(".reginettaDelBallo"),
+    document.querySelector("#accordion-reginettaDelBallo"),
     "Vota la reginetta del ballo!",
     "reginetta",
     "reginettaDelBalloCookie"
