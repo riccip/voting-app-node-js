@@ -47,7 +47,7 @@ const p = new Poll(
     document.querySelector(".reDelBallo"),
     "Vota il re del ballo!",
     "pollRisultato",
-    "reDelBalloCookie"
+    "reDelBalloCookie9999"
 );
 
 
@@ -55,5 +55,5 @@ const reginetta = new Poll(
     document.querySelector(".reginettaDelBallo"),
     "Vota la reginetta del ballo!",
     "reginettaRisultato",
-    "reginettaDelBalloCookie"
+    "reginettaDelBalloCookie9999"
 );
