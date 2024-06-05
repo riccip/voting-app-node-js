@@ -84,7 +84,7 @@ const p = new Poll(
     document.querySelector("#accordion-reDelBallo"),
     "Vota il re del ballo!",
     "poll",
-    "reDelBalloCookie"
+    "reDelBalloCookie9999"
 );
 
 
@@ -92,5 +92,5 @@ const reginetta = new Poll(
     document.querySelector("#accordion-reginettaDelBallo"),
     "Vota la reginetta del ballo!",
     "reginetta",
-    "reginettaDelBalloCookie"
+    "reginettaDelBalloCookie9999"
 );
