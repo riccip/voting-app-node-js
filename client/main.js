@@ -71,8 +71,6 @@ class Poll {
                 });
             }
 
-            fragmentOption.querySelector(".poll__option-fill").style.width = `${ option.percentage }%`;
-
             accordionBody.appendChild(fragmentOption);
         }
     }
