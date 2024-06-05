@@ -2,7 +2,7 @@ class Poll {
     constructor(root, title, postUrl, cookieName) {
         this.root = root;
         this.cookieName = cookieName;
-        this.selected = sessionStorage.getItem(cookieName);
+        this.selected = localStorage.getItem(cookieName);
         this.endpoint = "https://votingws.onrender.com/" + postUrl;
 
         this.root.insertAdjacentHTML("afterbegin", `
@@ -64,7 +64,7 @@ class Poll {
                     }).then(() => {
                         this.selected = option.label;
 
-                        sessionStorage.setItem(this.cookieName, option.label);
+                        localStorage.setItem(this.cookieName, option.label);
 
                         this._refresh();
                     })
@@ -80,7 +80,7 @@ const p = new Poll(
     document.querySelector("#accordion-reDelBallo"),
     "Vota il re del ballo!",
     "poll",
-    "reDelBalloCookie9999"
+    "reDelBalloCookie2024"
 );
 
 
@@ -88,5 +88,5 @@ const reginetta = new Poll(
     document.querySelector("#accordion-reginettaDelBallo"),
     "Vota la reginetta del ballo!",
     "reginetta",
-    "reginettaDelBalloCookie9999"
+    "reginettaDelBalloCookie2024"
 );
